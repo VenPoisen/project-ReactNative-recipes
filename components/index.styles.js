@@ -50,7 +50,7 @@ const styles = {
     recipeLinkableInfoText: {
         fontSize: SIZES.small,
         fontStyle: 'italic',
-        color: '#2E64FE',
+        color: COLORS.primary,
     },
     readMoreButton: {
         backgroundColor: COLORS.buttonDark,
