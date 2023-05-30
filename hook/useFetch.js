@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const useFetch = (query) => {
+import { BASE_URL } from "@env";
+
+const baseUrl = BASE_URL
+
+const useFetch = (endpoint, query) => {
     const [recipes, setRecipes] = useState([]);
     const [isLoading, setisLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const baseUrl = "http://localhost/recipes/api/v2/";
-
     const options = {
         method: 'GET',
-        url: `${baseUrl}`,
+        url: `${baseUrl}${endpoint}`,
         params: { ...query },
     };
 
@@ -19,10 +21,9 @@ const useFetch = (query) => {
 
         try {
             const response = await axios.request(options);
-            await new Promise(resolve => setTimeout(resolve, 600));
+            await new Promise(resolve => setTimeout(resolve, 300));
 
-            console.log(response)
-            setRecipes(response);
+            setRecipes(response.data);
             setisLoading(false);
 
         } catch (error) {
