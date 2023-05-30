@@ -2,7 +2,6 @@ import { useRouter } from 'expo-router'
 import { View, Text, SafeAreaView, TextInput, TouchableOpacity, ScrollView } from 'react-native'
 import React, { useState } from 'react'
 
-import { Drawer } from '../../navigation/DrawerNavigator'
 import ScreenHeaderBtn from '../../components/headerBtn/ScreenHeaderBtn'
 import { COLORS, FONT, SIZES } from '../../constants/theme'
 import icons from '../../constants/icons'
@@ -20,23 +19,6 @@ const Login = () => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
-            <Drawer.Screen
-                options={{
-                    title: "Login",
-                    headerTitleStyle: { color: COLORS.lightWhite, fontFamily: FONT.bold, fontSize: SIZES.xLarge, letterSpacing: 3 },
-                    headerStyle: { backgroundColor: COLORS.buttonDark },
-                    drawerLabel: "Login",
-                    drawerActiveTintColor: COLORS.white,
-                    drawerStyle: { backgroundColor: COLORS.primary },
-                    headerLeft: () => (
-                        <ScreenHeaderBtn
-                            iconUrl={icons.left}
-                            dimension='60%'
-                            handlePress={() => router.back()}
-                        />
-                    )
-                }}
-            />
             <ScrollView contentContainerStyle={{ flex: 1 }}>
                 <View style={styles.container}>
                     <Text style={styles.label}>Enter your email:</Text>
