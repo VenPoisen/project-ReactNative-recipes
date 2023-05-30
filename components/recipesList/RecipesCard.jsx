@@ -3,7 +3,6 @@ import { Text, TouchableOpacity, View, Image } from "react-native"
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faUser, faCalendarAlt, faLayerGroup, faStopwatch, faPizzaSlice, faEye } from '@fortawesome/free-solid-svg-icons';
 
-import foodImage from "../../assets/images/food.jpg";
 import styles from "../index.styles";
 import { SHADOWS } from "../../constants/theme";
 
@@ -11,7 +10,7 @@ const RecipesCard = ({ recipe, handleRecipeDetail }) => {
     return (
         <View style={SHADOWS.medium}>
             <View style={styles.cardContainer}>
-                < TouchableOpacity >
+                < TouchableOpacity onPress={() => handleRecipeDetail(recipe)}>
                     <Image source={{ uri: recipe.cover }} style={styles.recipeImage} />
                 </TouchableOpacity>
                 <View style={styles.recipeDescriptionContainer}>
