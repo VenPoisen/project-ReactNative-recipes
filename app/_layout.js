@@ -5,7 +5,7 @@ import { useCallback } from "react";
 
 import { COLORS, FONT, SIZES } from "../constants/theme";
 import { SplashScreen, usePathname, useRouter } from "expo-router";
-import { LoginStackNavigator, RecipeStackNavigator } from "../navigation/StackNavigator";
+import { LoginStackNavigator, RecipeStackNavigator, UserStackNavigator } from "../navigation/StackNavigator";
 import ScreenHeaderBtn from "../components/headerBtn/ScreenHeaderBtn";
 import icons from "../constants/icons";
 import CustomDrawerContent from "../navigation/DrawerNavigator";
@@ -65,6 +65,13 @@ const Layout = () => {
                     component={LoginStackNavigator}
                     options={{
                         drawerLabel: "Login",
+                    }}
+                />
+                <Drawer.Screen
+                    name="userDashboard"
+                    component={UserStackNavigator}
+                    options={{
+                        drawerLabel: "Dashboard",
                     }}
                 />
             </Drawer.Group>
