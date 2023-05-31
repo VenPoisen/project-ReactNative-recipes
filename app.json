@@ -4,6 +4,11 @@
     "web": {
       "bundler": "metro"
     },
+    "ios": {
+      "config": {
+        "usesNonExemptEncryption": false
+      }
+    },
     "name": "recipes-mobile",
     "slug": "recipes-mobile"
   }
