@@ -9,7 +9,7 @@ import RecipesCard from '../components/recipesList/RecipesCard';
 const HomeScreen = () => {
     const router = useRouter();
 
-    const { recipes, isLoading, error, refetch } = useFetch("")
+    const { data, isLoading, error, refetch } = useFetch("v2/")
 
     const handleRecipeDetail = (recipe) => {
         router.push(`/recipeDetail/${recipe.id}`)
@@ -32,7 +32,7 @@ const HomeScreen = () => {
                 ) : error ? (
                     <Text>Something went wrong</Text>
                 ) : (<FlatList
-                    data={recipes.results}
+                    data={data.results}
                     renderItem={({ item }) => (
                         <RecipesCard
                             recipe={item}
