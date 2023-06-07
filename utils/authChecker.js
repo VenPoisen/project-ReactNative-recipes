@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, createContext } from 'react';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
@@ -6,7 +6,9 @@ import { BASE_URL } from "@env";
 
 const baseUrl = BASE_URL
 
-const AuthChecker = () => {
+export const AuthContext = createContext();
+
+export const AuthChecker = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
@@ -50,7 +52,9 @@ const AuthChecker = () => {
         checkAuthentication();
     }, []);
 
-    return isAuthenticated ? true : false;
+    return (
+        <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+            {children}
+        </AuthContext.Provider>
+    );
 }
-
-export default AuthChecker;
