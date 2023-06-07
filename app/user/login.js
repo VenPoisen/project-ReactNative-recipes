@@ -1,14 +1,14 @@
 import { useRouter } from 'expo-router';
-import { View, Text, SafeAreaView, TextInput, TouchableOpacity, ScrollView } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, SafeAreaView, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-import { COLORS, FONT, SIZES } from '../../constants/theme'
+import { COLORS, SIZES } from '../../constants/theme'
 import styles from '../../components/user/login.styles'
+import { AuthContext } from '../../utils/authChecker';
 
 import { BASE_URL } from "@env";
-import { Alert } from 'react-native';
 
 const baseUrl = BASE_URL
 
@@ -17,29 +17,45 @@ const Login = () => {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-
+    const { setIsAuthenticated } = useContext(AuthContext);
+    const [isLoading, setIsLoading] = useState(false)
 
     const handleLogin = async () => {
-        // Lógica de autenticação do usuário
-        console.log(username, password)
+        // User Authentication logic
         try {
             if (username.length === 0 || password.length === 0) {
                 Alert.alert("Incorrect username or password")
-            } else {
-                const response = await axios.post(`${baseUrl}token/`, { username, password })
+                return;
+            }
+            else {
+                setIsLoading(true);
 
-                // Save on SecureStore
-                await SecureStore.setItemAsync("accessToken", response.data.access);
-                await SecureStore.setItemAsync("refreshToken", response.data.refresh);
+                const response = await axios.post(`${baseUrl}token/`, { username, password });
 
-                router.push("/userDashboard/dashboard")
-                setUsername('')
-                setPassword('')
+                // Checks if credentials are valid
+                if (response.status === 200) {
+                    try {
+                        // Save tokens on SecureStore
+                        await SecureStore.setItemAsync("accessToken", response.data.access);
+                        await SecureStore.setItemAsync("refreshToken", response.data.refresh);
+
+                        setIsAuthenticated(true);
+                        setUsername('')
+                        setPassword('')
+                        router.push("/userDashboard/dashboard")
+                    } catch (error) {
+                        Alert.alert('Error', 'Something went wrong, try again')
+                    }
+                } else {
+                    Alert.alert('Error', 'Authentication failed. Check your username and password')
+                }
             }
         }
         catch (error) {
-            console.log(error)
             Alert.alert('Error', 'Authentication failed. Check your username and password')
+            setIsAuthenticated(false);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -65,6 +81,7 @@ const Login = () => {
                     <TouchableOpacity style={styles.button} onPress={handleLogin}>
                         <Text style={styles.buttonText}>Login</Text>
                     </TouchableOpacity>
+                    {isLoading && <ActivityIndicator size="large" color={COLORS.primary} style={{ paddingTop: SIZES.medium }} />}
                     <View style={styles.registerView}>
                         <Text style={styles.registerText}>Not a member?</Text>
                         <TouchableOpacity onPress={() => { router.push('/user/register') }}>
