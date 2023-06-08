@@ -1,10 +1,7 @@
 import { UserStackNavigator } from "../../navigation/StackNavigator";
 
-
 const Layout = () => {
-    return (
-        <UserStackNavigator />
-    )
+    return <UserStackNavigator />
 }
 
 export default Layout;
