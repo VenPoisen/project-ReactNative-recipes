@@ -1,30 +1,62 @@
-import { DrawerContentScrollView, DrawerItem, DrawerItemList } from "@react-navigation/drawer";
-import { useRouter } from "expo-router";
+import React, { useContext } from "react";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 
-const CustomDrawerContent = (props) => {
+import { COLORS, FONT, SIZES } from "../constants/theme";
+import { LoginStackNavigator, RecipeStackNavigator, UserStackNavigator } from "../navigation/StackNavigator";
+import CustomDrawerContent from "../navigation/DrawerContent";
+import { AuthContext } from "../utils/authChecker";
 
-    const router = useRouter();
+const Drawer = createDrawerNavigator();
+
+export const DrawerNavigator = () => {
+
+    const { isAuthenticated } = useContext(AuthContext);
 
     return (
-        <DrawerContentScrollView {...props}>
-            <DrawerItemList {...props} />
-            <DrawerItem
-                label="Home"
-                onPress={() => router.push('/')}
-            />
-            <DrawerItem
-                label="Login"
-                onPress={() => router.push('/user')}
+        <Drawer.Navigator
+            backBehavior="initialRoute"
+            initialRouteName='index'
+            screenOptions={{
+                drawerPosition: "right",
+            }}
+            drawerContent={(props) => <CustomDrawerContent {...props} />}
+        >
+            <Drawer.Group screenOptions={{
+                headerTitleStyle: {
+                    color: COLORS.lightWhite,
+                    fontFamily: FONT.bold, fontSize: SIZES.xLarge, letterSpacing: 3
+                },
+                headerStyle: {
+                    backgroundColor: COLORS.buttonDark
+                },
+                drawerActiveTintColor: COLORS.white,
+                drawerStyle: { backgroundColor: COLORS.primary },
+                headerShown: false,
+            }}>
+                <Drawer.Screen
+                    name="index"
+                    component={RecipeStackNavigator}
+                    options={{
+                        drawerLabel: "Home",
+                    }}
 
-            />
-            {/* talvez consigo passar aqui os links e forcar  */}
-            <DrawerItem
-                label="Help"
-                onPress={() => alert('Link to help')}
-
-            />
-        </DrawerContentScrollView>
-    );
+                />
+                {isAuthenticated ?
+                    (<Drawer.Screen
+                        name="userDashboard"
+                        component={UserStackNavigator}
+                        options={{
+                            drawerLabel: "Dashboard",
+                        }}
+                    />) :
+                    (<Drawer.Screen
+                        name="user"
+                        component={LoginStackNavigator}
+                        options={{
+                            drawerLabel: "Login",
+                        }}
+                    />)}
+            </Drawer.Group>
+        </Drawer.Navigator >
+    )
 }
-
-export default CustomDrawerContent;

@@ -1,16 +1,9 @@
-import React from "react";
-import { DrawerToggleButton, createDrawerNavigator } from "@react-navigation/drawer";
+import React, { useCallback } from "react";
+import { SplashScreen } from "expo-router";
 import { useFonts } from "expo-font";
-import { useCallback } from "react";
 
-import { COLORS, FONT, SIZES } from "../constants/theme";
-import { SplashScreen, usePathname, useRouter } from "expo-router";
-import { LoginStackNavigator, RecipeStackNavigator, UserStackNavigator } from "../navigation/StackNavigator";
-import ScreenHeaderBtn from "../components/headerBtn/ScreenHeaderBtn";
-import icons from "../constants/icons";
-import CustomDrawerContent from "../navigation/DrawerNavigator";
-
-const Drawer = createDrawerNavigator();
+import { AuthChecker } from "../utils/authChecker";
+import { DrawerNavigator } from "../navigation/DrawerNavigator";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -30,54 +23,11 @@ const Layout = () => {
 
     if (!fontsloaded) return null;
 
-
     return (
-        <Drawer.Navigator
-            onLayout={onLayoutRootView}
-            backBehavior="initialRoute"
-            initialRouteName='index'
-            screenOptions={{
-                drawerPosition: "right",
-            }}
-            drawerContent={(props) => <CustomDrawerContent {...props} />}
-        >
-            <Drawer.Group screenOptions={{
-                headerTitleStyle: {
-                    color: COLORS.lightWhite,
-                    fontFamily: FONT.bold, fontSize: SIZES.xLarge, letterSpacing: 3
-                },
-                headerStyle: {
-                    backgroundColor: COLORS.buttonDark
-                },
-                drawerActiveTintColor: COLORS.white,
-                drawerStyle: { backgroundColor: COLORS.primary },
-                headerShown: false,
-            }}>
-                <Drawer.Screen
-                    name="index"
-                    component={RecipeStackNavigator}
-                    options={{
-                        drawerLabel: "Home",
-                    }}
-                />
-                <Drawer.Screen
-                    name="user"
-                    component={LoginStackNavigator}
-                    options={{
-                        drawerLabel: "Login",
-                    }}
-                />
-                <Drawer.Screen
-                    name="userDashboard"
-                    component={UserStackNavigator}
-                    options={{
-                        drawerLabel: "Dashboard",
-                    }}
-                />
-            </Drawer.Group>
-        </Drawer.Navigator >
-
-    );
+        <AuthChecker onLayout={onLayoutRootView}>
+            <DrawerNavigator />
+        </AuthChecker>
+    )
 }
 
 export default Layout;
