@@ -1,13 +1,13 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
+import { DrawerToggleButton } from "@react-navigation/drawer";
 
 import HomeScreen from "../app/index";
 import Login from "../app/user/login";
 import Register from "../app/user/register";
 import RecipeDetail from "../app/recipeDetail/[id]";
-import { COLORS, FONT, SIZES } from "../constants/theme";
-import { DrawerToggleButton } from "@react-navigation/drawer";
 import Dashboard from "../app/userDashboard/dashboard";
+import { COLORS, FONT, SIZES } from "../constants/theme";
 
 const Stack = createStackNavigator();
 
@@ -42,16 +42,18 @@ const RecipeStackNavigator = () => {
 
 const LoginStackNavigator = () => {
     return (
-        <Stack.Navigator screenOptions={{
-            headerTitleStyle: {
-                color: COLORS.lightWhite,
-                fontFamily: FONT.bold, fontSize: SIZES.xLarge, letterSpacing: 3
-            },
-            headerStyle: {
-                backgroundColor: COLORS.buttonDark
-            },
-            headerRight: () => <DrawerToggleButton tintColor={COLORS.primary} />
-        }}>
+        <Stack.Navigator
+            initialRouteName="login"
+            screenOptions={{
+                headerTitleStyle: {
+                    color: COLORS.lightWhite,
+                    fontFamily: FONT.bold, fontSize: SIZES.xLarge, letterSpacing: 3
+                },
+                headerStyle: {
+                    backgroundColor: COLORS.buttonDark
+                },
+                headerRight: () => <DrawerToggleButton tintColor={COLORS.primary} />,
+            }}>
             <Stack.Screen name="login" component={Login}
                 options={{
                     title: 'Login',
@@ -62,12 +64,12 @@ const LoginStackNavigator = () => {
                 component={Register}
                 options={{
                     title: "Register",
-                    headerTintColor: COLORS.primary,
                 }}
             />
         </Stack.Navigator>
     );
 }
+
 const UserStackNavigator = () => {
     return (
         <Stack.Navigator screenOptions={{
