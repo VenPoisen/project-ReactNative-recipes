@@ -30,30 +30,35 @@ const Register = () => {
                     <TextInput
                         style={styles.input}
                         placeholder="First Name"
+                        placeholderTextColor={COLORS.gray}
                         value={firstName}
                         onChangeText={setFirstName}
                     />
                     <TextInput
                         style={styles.input}
                         placeholder="Last Name"
+                        placeholderTextColor={COLORS.gray}
                         value={lastName}
                         onChangeText={setLastName}
                     />
                     <TextInput
                         style={styles.input}
                         placeholder="Username"
+                        placeholderTextColor={COLORS.gray}
                         value={username}
                         onChangeText={setUsername}
                     />
                     <TextInput
                         style={styles.input}
                         placeholder="Email"
+                        placeholderTextColor={COLORS.gray}
                         value={email}
                         onChangeText={setEmail}
                     />
                     <TextInput
                         style={styles.input}
                         placeholder="Password"
+                        placeholderTextColor={COLORS.gray}
                         secureTextEntry={true}
                         value={password}
                         onChangeText={setPassword}
@@ -61,6 +66,7 @@ const Register = () => {
                     <TextInput
                         style={styles.input}
                         placeholder="Repeat Password"
+                        placeholderTextColor={COLORS.gray}
                         secureTextEntry={true}
                         value={repeatPassword}
                         onChangeText={setRepeatPassword}

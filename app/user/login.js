@@ -59,6 +59,9 @@ const Login = () => {
         }
     };
 
+    // TODO: Setar logica para login e para registro do usuario,
+    // TODO: Fazer barra de pesquisa de receitas,
+    // TODO: Fazer paginas de filtro para autores, tags e categorias
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
             <ScrollView contentContainerStyle={{ flex: 1 }}>
@@ -67,6 +70,7 @@ const Login = () => {
                     <TextInput
                         style={styles.input}
                         placeholder="Username"
+                        placeholderTextColor={COLORS.gray}
                         value={username}
                         onChangeText={setUsername}
                     />
@@ -74,6 +78,7 @@ const Login = () => {
                     <TextInput
                         style={styles.input}
                         placeholder="Password"
+                        placeholderTextColor={COLORS.gray}
                         secureTextEntry={true}
                         value={password}
                         onChangeText={setPassword}
