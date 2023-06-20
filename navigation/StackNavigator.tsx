@@ -6,6 +6,7 @@ import HomeScreen from "../app/index";
 import Login from "../app/user/login";
 import Register from "../app/user/register";
 import RecipeDetail from "../app/recipeDetail/[id]";
+import EditRecipe from "../app/userDashboard/editRecipe/[id]";
 import Dashboard from "../app/userDashboard/dashboard";
 import { COLORS, FONT, SIZES } from "../constants/theme";
 
@@ -85,6 +86,11 @@ const UserStackNavigator = () => {
             <Stack.Screen name="dashboard" component={Dashboard}
                 options={{
                     title: 'Dashboard',
+                }}
+            />
+            <Stack.Screen name="editRecipe/[id]" component={EditRecipe}
+                options={{
+                    title: 'Edit',
                 }}
             />
         </Stack.Navigator>

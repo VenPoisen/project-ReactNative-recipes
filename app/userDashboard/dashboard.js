@@ -17,6 +17,7 @@ const authorUrl = AUTHOR_URL
 
 const Dashboard = () => {
 
+    const router = useRouter();
     const navigation = useNavigation();
     const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
 
@@ -63,10 +64,11 @@ const Dashboard = () => {
         }
     }, [data]);
 
-    const handleEditRecipe = (recipeId) => {
-
+    const handleEditRecipe = (recipe) => {
+        router.push(`/userDashboard/editRecipe/${recipe.id}`)
+        router.setParams({ 'recipe': recipe })
     }
-    const handleDeleteRecipe = (recipeId) => {
+    const handleDeleteRecipe = (recipe) => {
 
     }
 
