@@ -1,5 +1,5 @@
-import { Text, ScrollView, View, ActivityIndicator, SafeAreaView, Alert, TouchableOpacity, TextInput } from 'react-native'
-import React, { useContext, useEffect, useState } from 'react'
+import { Text, ScrollView, View, ActivityIndicator, SafeAreaView, Alert, TouchableOpacity, TextInput, RefreshControl } from 'react-native'
+import React, { useContext, useEffect, useState, useCallback } from 'react'
 import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
 
@@ -9,9 +9,9 @@ import { AuthContext } from '../../utils/authChecker';
 import { useNavigation, useRouter } from 'expo-router';
 import { CommonActions } from '@react-navigation/native';
 import { COLORS, SIZES } from '../../constants/theme';
+import styles from '../../components/dashboard/dashboard.styles';
 
 import { AUTHOR_URL } from "@env";
-import styles from '../../components/dashboard/dashboard.styles';
 
 const authorUrl = AUTHOR_URL
 
@@ -27,6 +27,14 @@ const Dashboard = () => {
 
     const [searchText, setSearchText] = useState('');
     const [username, setUsername] = useState('');
+
+    const [refreshing, setRefreshing] = useState(false)
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        refetch();
+        setRefreshing(false);
+    }, [])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -96,7 +104,15 @@ const Dashboard = () => {
                         </View>
                         <View style={{ flex: 1 }}>
                             <Text style={styles.recipeTitle}>Your Recipes</Text>
-                            <ScrollView showsVerticalScrollIndicator={false}>
+                            <ScrollView
+                                showsVerticalScrollIndicator={false}
+                                refreshControl={
+                                    <RefreshControl
+                                        refreshing={refreshing}
+                                        onRefresh={onRefresh}
+                                        tintColor={COLORS.primary}
+                                    />}
+                            >
                                 {recipes && recipes.length > 0 ? recipes.map((recipe) => (
                                     <RecipeCard
                                         key={recipe.id}
