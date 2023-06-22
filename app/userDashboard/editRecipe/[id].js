@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { ScrollView, Text, View, TextInput, TouchableOpacity, SafeAreaView, Modal, Alert } from "react-native";
+import { ScrollView, Text, View, TextInput, TouchableOpacity, SafeAreaView, Modal, Alert, Image } from "react-native";
+import { useNavigation } from "expo-router";
+import { CommonActions } from "@react-navigation/native";
 import { Picker } from '@react-native-picker/picker'
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import * as ImagePicker from 'expo-image-picker';
 
-import RecipeCard from "../../../components/dashboard/createdRecipe";
 import { COLORS, SHADOWS } from "../../../constants/theme";
 import styles from "../../../components/dashboard/editRecipe";
+import { sendImageToAPI } from "../../../utils/sendImageToAPI";
 
 const optionsPreparationUnit = ['minutes', 'hour', 'seconds'];
 const optionsServingsUnit = ['people', 'g', 'mL', 'slice', 'portion'];
@@ -15,6 +18,8 @@ const EditRecipe = ({ route }) => {
     const recipe = route.params.recipe
 
     const [tag, setTag] = useState('');
+    const [isErrorImage, setIsErrorImage] = useState(false);
+
     const [isPickerPrepVisible, setIsPickerPrepVisible] = useState(false);
     const [isPickerServVisible, setIsPickerServVisible] = useState(false);
 
@@ -40,6 +45,31 @@ const EditRecipe = ({ route }) => {
                 tag_objects: [...prevData.tag_objects, tagObj],
             }));
             setTag('');
+        }
+    };
+
+    const pickImage = async () => {
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (permissionResult.granted === false) {
+            console.log('Permission to access library denied');
+            return;
+        }
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+        });
+        if (!result.canceled) {
+            const { uri, fileName, type } = result.assets[0];
+            sendImageToAPI(uri, fileName, type, recipe_id, setIsErrorImage);
+
+            if (!isErrorImage) {
+                setFormData(prevData => ({
+                    ...prevData,
+                    'cover': result.assets[0].uri,
+                }));
+            }
         }
     };
 
@@ -85,12 +115,21 @@ const EditRecipe = ({ route }) => {
 
     return (
         <SafeAreaView>
-            <ScrollView >
-                <View style={SHADOWS.medium}>
-                    <RecipeCard
-                        key={recipe_id}
-                        recipe={recipe}
-                    />
+            <ScrollView
+
+            >
+                <TouchableOpacity>
+                    <View style={[SHADOWS.medium, styles.containerImg]}>
+                        <Image
+                            source={{ uri: formData['cover'] }}
+                            style={styles.recipeImage}
+                        />
+                    </View>
+                </TouchableOpacity>
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <TouchableOpacity onPress={pickImage} style={[SHADOWS.small, styles.addButton]}>
+                        <Text style={styles.addButtonText}>Change Image</Text>
+                    </TouchableOpacity>
                 </View>
                 <View style={[SHADOWS.medium, styles.container]}>
                     <Text style={styles.text}>Title</Text>
@@ -133,10 +172,10 @@ const EditRecipe = ({ route }) => {
                         onChangeText={setTag}
                     />
                     <TouchableOpacity
-                        style={styles.tagAddButton}
+                        style={[SHADOWS.small, styles.addButton]}
                         onPress={addTag}
                     >
-                        <Text style={styles.tagAddButtonText}>Add new Tag</Text>
+                        <Text style={styles.addButtonText}>Add new Tag</Text>
                     </TouchableOpacity>
 
                     <Text style={styles.text}>Preparation Time</Text>
@@ -220,7 +259,7 @@ const EditRecipe = ({ route }) => {
                         value={formData["preparation_steps"]}
                         onChangeText={value => handleInputChange('preparation_steps', value)}
                     />
-                    <TouchableOpacity onPress={handleUpdate} style={styles.updateButton}>
+                    <TouchableOpacity onPress={handleUpdate} style={[SHADOWS.small, styles.updateButton]}>
                         <Text style={styles.updateText}>UPDATE RECIPE</Text>
                     </TouchableOpacity>
 

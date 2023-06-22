@@ -1,6 +1,11 @@
 import { COLORS, FONT, SIZES } from "../../constants/theme";
 
 const styles = {
+    containerImg: {
+        margin: SIZES.medium,
+        borderRadius: SIZES.medium,
+        backgroundColor: COLORS.lightWhite,
+    },
     container: {
         margin: SIZES.medium,
         padding: SIZES.medium,
@@ -10,6 +15,11 @@ const styles = {
     text: {
         fontFamily: FONT.bold,
         fontSize: SIZES.medium,
+    },
+    recipeImage: {
+        width: '100%',
+        height: 200,
+        borderRadius: SIZES.xxSmall,
     },
     input: {
         width: '100%',
@@ -45,7 +55,7 @@ const styles = {
         color: COLORS.lightWhite,
         fontFamily: FONT.regular,
     },
-    tagAddButton: {
+    addButton: {
         width: 130,
         backgroundColor: COLORS.primary,
         borderRadius: SIZES.xxSmall,
@@ -53,7 +63,7 @@ const styles = {
         paddingVertical: SIZES.xSmall,
         alignSelf: "center",
     },
-    tagAddButtonText: {
+    addButtonText: {
         textAlign: "center",
         fontFamily: FONT.medium,
         fontSize: SIZES.medium,
