@@ -14,6 +14,8 @@ const optionsPreparationUnit = ['minutes', 'hour', 'seconds'];
 const optionsServingsUnit = ['people', 'g', 'mL', 'slice', 'portion'];
 
 const EditRecipe = ({ route }) => {
+    const navigation = useNavigation();
+
     const recipe_id = route.params.id
     const recipe = route.params.recipe
 
@@ -34,6 +36,14 @@ const EditRecipe = ({ route }) => {
         'preparation_steps': recipe.preparation_steps,
         'cover': recipe.cover,
     });
+
+    const resetNavigation = () => {
+        const resetAction = CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'dashboard' }],
+        });
+        navigation.dispatch(resetAction);
+    };
 
     const addTag = () => {
         if (tag.trim() !== '') {
@@ -111,6 +121,8 @@ const EditRecipe = ({ route }) => {
 
 
     const handleUpdate = async () => {
+            Alert.alert("Your recipe has been updated");
+            resetNavigation();
     };
 
     return (
