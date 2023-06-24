@@ -77,6 +77,9 @@ const EditRecipe = ({ route }) => {
         }));
     };
 
+    /**
+     * pickImage use ImagePicker to let you select an image from gallery.
+     */
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (permissionResult.granted === false) {
@@ -122,6 +125,9 @@ const EditRecipe = ({ route }) => {
         setIsPickerTagsVisible(false);
     };
 
+    /**
+     * Adds selected data to formData
+     */
     const handleInputChange = (name, value) => {
         if (name === "tags") {
             setSelectedTagValue(value)
@@ -133,6 +139,9 @@ const EditRecipe = ({ route }) => {
         }
     };
 
+    /**
+     * Filters numeric inputs on the edit form to accept only integer numbers.
+     */
     const handleInputBlur = (name, value) => {
         if (isNaN(value) || value === '') {
             setFormData(prevData => ({
