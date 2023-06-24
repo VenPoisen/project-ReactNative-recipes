@@ -30,6 +30,10 @@ const styles = {
         marginBottom: SIZES.small,
         padding: SIZES.xSmall,
     },
+    inputToModal: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
     modalView: {
         marginVertical: 300,
         marginHorizontal: SIZES.xLarge,
@@ -43,6 +47,9 @@ const styles = {
         margin: SIZES.xxSmall,
     },
     tagItem: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: "center",
         borderWidth: 1,
         borderColor: COLORS.link,
         backgroundColor: COLORS.primary,

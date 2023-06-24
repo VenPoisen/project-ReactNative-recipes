@@ -22,9 +22,9 @@ const Dashboard = () => {
     const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
 
     const { data, error, refetch } = useFetch('v2/');
+    const { data: dataTags, error: errorTags } = useFetch('tags/v2/');
     const [isLoading, setIsLoading] = useState(true);
     const [recipes, setRecipes] = useState([]);
-
     const [searchText, setSearchText] = useState('');
     const [username, setUsername] = useState('');
 
@@ -74,7 +74,7 @@ const Dashboard = () => {
 
     const handleEditRecipe = (recipe) => {
         router.push(`/userDashboard/editRecipe/${recipe.id}`)
-        router.setParams({ 'recipe': recipe })
+        router.setParams({ 'recipe': recipe, 'tags': dataTags.results })
     }
     const handleDeleteRecipe = (recipe) => {
 

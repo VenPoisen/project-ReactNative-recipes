@@ -6,6 +6,9 @@ import { Picker } from '@react-native-picker/picker'
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import * as ImagePicker from 'expo-image-picker';
 
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faArrowDown, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
+
 import { COLORS, SHADOWS } from "../../../constants/theme";
 import styles from "../../../components/dashboard/editRecipe";
 import { sendImageToAPI } from "../../../utils/sendImageToAPI";
@@ -16,18 +19,23 @@ const optionsServingsUnit = ['people', 'g', 'mL', 'slice', 'portion'];
 const EditRecipe = ({ route }) => {
     const navigation = useNavigation();
 
-    const recipe_id = route.params.id
-    const recipe = route.params.recipe
+    const recipe_id = route.params.id;
+    const recipe = route.params.recipe;
 
-    const [tag, setTag] = useState('');
+    const tags = route.params.tags.sort((a, b) => a.name.localeCompare(b.name));
+    const [selectedTagValue, setSelectedTagValue] = useState('');
+    const [tag, setTag] = useState([]);
+
     const [isErrorImage, setIsErrorImage] = useState(false);
 
     const [isPickerPrepVisible, setIsPickerPrepVisible] = useState(false);
     const [isPickerServVisible, setIsPickerServVisible] = useState(false);
+    const [isPickerTagsVisible, setIsPickerTagsVisible] = useState(false);
 
     const [formData, setFormData] = useState({
         'title': recipe.title,
         'description': recipe.description,
+        'tags': recipe.tags,
         'tag_objects': recipe.tag_objects,
         'preparation_time': recipe.preparation_time,
         'preparation_time_unit': recipe.preparation_time_unit,
@@ -46,16 +54,27 @@ const EditRecipe = ({ route }) => {
     };
 
     const addTag = () => {
-        if (tag.trim() !== '') {
-            const tagObj = {
-                "name": tag
-            }
+        const filtTag = tags.filter((tag) => tag.name.includes(selectedTagValue))
+
+        if (!tag.includes(filtTag[0]) && !formData['tags'].includes(filtTag[0].id)) {
+            setTag([...tag, filtTag[0]]);
             setFormData(prevData => ({
                 ...prevData,
-                tag_objects: [...prevData.tag_objects, tagObj],
+                'tags': [...prevData.tags, filtTag[0].id]
             }));
-            setTag('');
         }
+    };
+
+    const removeTag = (tagId) => {
+        const formFilteredTags = formData['tag_objects'].filter((tag) => tag.id !== tagId);
+        const filteredTags = tag.filter((tag) => tag.id !== tagId);
+
+        setTag(filteredTags);
+        setFormData(prevData => ({
+            ...prevData,
+            'tag_objects': formFilteredTags,
+            'tags': [...formFilteredTags, ...filteredTags].map((tag) => tag.id),
+        }));
     };
 
     const pickImage = async () => {
@@ -83,11 +102,35 @@ const EditRecipe = ({ route }) => {
         }
     };
 
+    /**
+     * This handles the picker selector for preparation_time, servings_unit
+     * and tags from formData.
+     */
+    const handlePickerOpen = (param) => {
+        if (param === "preparation") {
+            setIsPickerPrepVisible(true);
+        } else if (param === "servings") {
+            setIsPickerServVisible(true);
+        } else if (param === "tags") {
+            setIsPickerTagsVisible(true);
+        }
+    };
+
+    const handlePickerClose = () => {
+        setIsPickerPrepVisible(false);
+        setIsPickerServVisible(false);
+        setIsPickerTagsVisible(false);
+    };
+
     const handleInputChange = (name, value) => {
-        setFormData(prevData => ({
-            ...prevData,
-            [name]: value,
-        }));
+        if (name === "tags") {
+            setSelectedTagValue(value)
+        } else {
+            setFormData(prevData => ({
+                ...prevData,
+                [name]: value,
+            }));
+        }
     };
 
     const handleInputBlur = (name, value) => {
@@ -106,18 +149,7 @@ const EditRecipe = ({ route }) => {
         }
     }
 
-    const handlePickerOpen = (param) => {
-        if (param === "preparation") {
-            setIsPickerPrepVisible(true);
-        } else if (param === "servings") {
-            setIsPickerServVisible(true);
-        }
-    };
 
-    const handlePickerClose = () => {
-        setIsPickerPrepVisible(false);
-        setIsPickerServVisible(false);
-    };
 
 
     const handleUpdate = async () => {
@@ -126,9 +158,9 @@ const EditRecipe = ({ route }) => {
     };
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.buttonDark }}>
             <ScrollView
-
+                style={{ flex: 1, backgroundColor: COLORS.white }}
             >
                 <TouchableOpacity>
                     <View style={[SHADOWS.medium, styles.containerImg]}>
@@ -170,19 +202,48 @@ const EditRecipe = ({ route }) => {
 
                     <Text style={styles.text}>Tags</Text>
                     <ScrollView contentContainerStyle={styles.tagsContainer} horizontal={true} showsHorizontalScrollIndicator={false}>
-                        {formData["tag_objects"].map((tag, index) => (
+                        {[...formData['tag_objects'], ...tag].map((tag, index) => (
                             <View key={index} style={styles.tagItem}>
                                 <Text style={styles.tagText}>{tag.name}</Text>
+                                <TouchableOpacity
+                                    style={{ marginLeft: 6 }}
+                                    onPress={() => removeTag(tag.id)}
+                                >
+                                    <FontAwesomeIcon
+                                        icon={faXmarkCircle}
+                                        color={COLORS.buttonDark}
+                                    />
+                                </TouchableOpacity>
                             </View>
                         ))}
                     </ScrollView>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="New Tag"
-                        placeholderTextColor={COLORS.gray}
-                        value={tag}
-                        onChangeText={setTag}
-                    />
+                    <TouchableWithoutFeedback onPress={() => handlePickerOpen("tags")} style={styles.input}>
+                        <View style={styles.inputToModal}>
+                            <TextInput
+                                placeholder="Select New Tag"
+                                placeholderTextColor={COLORS.gray}
+                                value={selectedTagValue}
+                                editable={false}
+                            />
+                            <FontAwesomeIcon
+                                icon={faArrowDown}
+                            />
+                        </View>
+                    </TouchableWithoutFeedback>
+                    <Modal visible={isPickerTagsVisible} animationType="slide" transparent={true} onRequestClose={handlePickerClose}>
+                        <TouchableWithoutFeedback onPress={handlePickerClose}>
+                            <View style={[SHADOWS.medium, styles.modalView]}>
+                                <Picker
+                                    selectedValue={selectedTagValue}
+                                    onValueChange={(value) => handleInputChange('tags', value)}
+                                >
+                                    {tags.map((tag) => (
+                                        <Picker.Item key={tag.id} label={tag.name} value={tag.name} />
+                                    ))}
+                                </Picker>
+                            </View>
+                        </TouchableWithoutFeedback>
+                    </Modal>
                     <TouchableOpacity
                         style={[SHADOWS.small, styles.addButton]}
                         onPress={addTag}
@@ -203,11 +264,14 @@ const EditRecipe = ({ route }) => {
 
                     <Text style={styles.text}>Preparation Time Unit</Text>
                     <TouchableWithoutFeedback onPress={() => handlePickerOpen("preparation")} style={styles.input}>
-                        <View>
+                        <View style={styles.inputToModal}>
                             <TextInput
                                 placeholder="Selecione uma opção"
                                 value={formData["preparation_time_unit"]}
                                 editable={false}
+                            />
+                            <FontAwesomeIcon
+                                icon={faArrowDown}
                             />
                         </View>
                     </TouchableWithoutFeedback>
@@ -237,11 +301,14 @@ const EditRecipe = ({ route }) => {
                     />
                     <Text style={styles.text}>Servings Unit</Text>
                     <TouchableWithoutFeedback onPress={() => handlePickerOpen("servings")} style={styles.input}>
-                        <View>
+                        <View style={styles.inputToModal}>
                             <TextInput
                                 placeholder="Selecione uma opção"
                                 value={formData["servings_unit"]}
                                 editable={false}
+                            />
+                            <FontAwesomeIcon
+                                icon={faArrowDown}
                             />
                         </View>
                     </TouchableWithoutFeedback>
