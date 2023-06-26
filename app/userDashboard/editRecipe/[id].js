@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { ScrollView, Text, View, TextInput, TouchableOpacity, SafeAreaView, Modal, Alert, Image } from "react-native";
+import { ScrollView, Text, View, TextInput, TouchableOpacity, SafeAreaView, Modal, Alert, Image, KeyboardAvoidingView } from "react-native";
 import { useNavigation } from "expo-router";
 import { CommonActions } from "@react-navigation/native";
 import { Picker } from '@react-native-picker/picker'
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import axios from "axios";
 import * as ImagePicker from 'expo-image-picker';
+import * as SecureStore from 'expo-secure-store';
 
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowDown, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
@@ -12,6 +14,10 @@ import { faArrowDown, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 import { COLORS, SHADOWS } from "../../../constants/theme";
 import styles from "../../../components/dashboard/editRecipe";
 import { sendImageToAPI } from "../../../utils/sendImageToAPI";
+
+import { BASE_URL } from "@env";
+
+const baseUrl = BASE_URL
 
 const optionsPreparationUnit = ['minutes', 'hour', 'seconds'];
 const optionsServingsUnit = ['people', 'g', 'mL', 'slice', 'portion'];
@@ -83,7 +89,7 @@ const EditRecipe = ({ route }) => {
     const pickImage = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (permissionResult.granted === false) {
-            console.log('Permission to access library denied');
+            Alert.alert('Permission to access library denied');
             return;
         }
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -127,6 +133,7 @@ const EditRecipe = ({ route }) => {
 
     /**
      * Adds selected data to formData
+     * @param {string} name - Name of the formData field to be update. 
      */
     const handleInputChange = (name, value) => {
         if (name === "tags") {
@@ -158,12 +165,49 @@ const EditRecipe = ({ route }) => {
         }
     }
 
-
-
-
     const handleUpdate = async () => {
-            Alert.alert("Your recipe has been updated");
-            resetNavigation();
+        try {
+            const token = await SecureStore.getItemAsync('accessToken')
+            const updatedFields = {};
+
+            for (const field in formData) {
+                if (formData[field] !== recipe[field]) {
+                    updatedFields[field] = formData[field];
+                }
+            }
+            delete updatedFields['tag_objects'];
+
+            // Needs this because maxLength not currently working on 
+            // react-native@0.71.8 and expo@48.0.7
+            if (formData["description"].length > 165) {
+                Alert.alert(
+                    'Your description cannot be longer than 165 characters',
+                    `Current characters -> ${formData["description"].length}`
+                );
+                return;
+            }
+
+            const response = await axios.patch(
+                `${baseUrl}v2/${recipe_id}/`,
+                updatedFields,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                }
+            )
+            if (response.status === 200) {
+                Alert.alert('Your recipe has been updated');
+                resetNavigation();
+            } else {
+                Alert.alert(
+                    'Error updating the recipe, try again: status code',
+                    response.status
+                );
+            }
+        } catch (error) {
+            console.error('Error updating the recipe:', error);
+        }
     };
 
     return (

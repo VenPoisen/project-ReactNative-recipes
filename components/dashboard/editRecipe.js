@@ -7,6 +7,7 @@ const styles = {
         backgroundColor: COLORS.lightWhite,
     },
     container: {
+        flex: 1,
         margin: SIZES.medium,
         padding: SIZES.medium,
         borderRadius: SIZES.medium,
